@@ -9,7 +9,6 @@ table+="\n"
 table+="| Sub-repository | Description |\n"
 table+="| --- | --- |\n"
 
-
 for readme in ${readmes[@]}; do
     repo=$(dirname $readme)
     # Get the first line of the README that is not a header
@@ -19,7 +18,7 @@ done
 
 
 # Remove the old table
-perl -0777 -i -pe 's/\#+\s*Sub-Repositories[\s\S]*(?=\#|\n)//g' README.md
+perl -0777 -i -pe 's/\#+\s*Sub-Repositories[\s\S]*(?=\#?)//g' README.md
 
 # Remove trailing whitespace
 perl -0777 -i -pe 's/\s+$//g' README.md
