@@ -12,6 +12,10 @@
     "tsc": "^2.0.4"
   },
   "scripts": {
-    "start": "yarn tsc src/index.ts && node src/index.js"
+    "start": "yarn tsc src/index.ts && node src/index.js",
+    "docker:build": "docker build -t ecs_express_example .",
+    "docker:run": "yarn docker:kill; docker run -it -p 80:80 --name ecs_express_example_cont ecs_express_example",
+    "docker:kill": "docker kill ecs_express_example_cont; docker rm ecs_express_example_cont",
+    "docker:get_request": "echo $(curl http://localhost:80)"
   }
 }
