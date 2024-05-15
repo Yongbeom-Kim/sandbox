@@ -8,6 +8,9 @@ table+="| Sub-repository | Description |\n"
 table+="| --- | --- |\n"
 
 readmes=(./*/README.md)
+if [[ $(ls -d */ | wc -l) -eq 0 ]]; then
+    readmes=()
+fi
 
 echo "Found ${#readmes[@]} sub-repositories in $(pwd): ${readmes[@]}"
 
@@ -19,7 +22,7 @@ for readme in ${readmes[@]}; do
 done
 
 if [[ "${#readmes[@]}" -eq 0 ]]; then
-    table+="| No sub-repositories |  |"
+    table+="| No sub-repositories | - |"
 fi
 
 
