@@ -1,6 +1,4 @@
 #!/bin/bash
-readmes=("$(find . -wholename ./*/README.md)")
-echo ${readmes[@]}
 
 table="\n"
 table+="\n"
@@ -9,12 +7,20 @@ table+="\n"
 table+="| Sub-repository | Description |\n"
 table+="| --- | --- |\n"
 
+readmes=(./*/README.md)
+
+echo "Found ${#readmes[@]} sub-repositories in $(pwd): ${readmes[@]}"
+
 for readme in ${readmes[@]}; do
     repo=$(dirname $readme)
     # Get the first line of the README that is not a header
     description=$(cat $readme | egrep '^[^#]+' -m 1)
     table+="| [$repo]($repo) | $description |\n"
 done
+
+if [[ "${#readmes[@]}" -eq 0 ]]; then
+    table+="| No sub-repositories |  |"
+fi
 
 
 # Remove the old table
