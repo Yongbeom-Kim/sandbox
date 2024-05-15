@@ -6,4 +6,4 @@ Sandbox for examples and testing with AWS services.
 
 | Sub-repository | Description |
 | --- | --- |
-| No sub-repositories | - |
+| [./ecs_express_example](./ecs_express_example) | Sample project to demonstrate how to deploy an Express.js application to AWS ECS. |
