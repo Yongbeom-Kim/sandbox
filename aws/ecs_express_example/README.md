@@ -47,3 +47,6 @@ To see the scripts involved in running the Express app locally, check the `scrip
     ```bash
     yarn docker:kill
     ```
+
+## Things to take note of
+- We run this app on port 80 (mapped to host port 80) in the Docker container. This is because the default port for HTTP is 80.
