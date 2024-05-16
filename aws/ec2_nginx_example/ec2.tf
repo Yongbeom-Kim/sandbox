@@ -29,7 +29,7 @@ resource "aws_instance" "web" {
   subnet_id = aws_subnet.public.id
   security_groups = [
     aws_security_group.allow_http_https.id,
-    aws_security_group.allow_ssh.id,
+    # aws_security_group.allow_ssh.id, # For debugging
     aws_security_group.allow_all_outbound.id,
   ]
 

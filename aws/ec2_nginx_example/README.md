@@ -13,6 +13,8 @@ Installation of Nginx on EC2 instance. Example for configuring VPCs, subnets, se
 4. `terraform apply`
 5. There will be an output with the public IP of the EC2 instance. Use this IP to access the Nginx server after some delay (HTTP only).
 
+To destroy the infrastructure, do `terraform destroy`.
+
 ## Notes
 This project configures the following infrastructure:
 - A VPC
