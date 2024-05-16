@@ -22,3 +22,6 @@ This project configures the following infrastructure:
   - Internet gateway & Route table for subnet
   - EC2 instance
     - Security groups for EC2 instance (Incoming HTTP(S), Incoming SSH, Outgoing all)
+
+## References
+- [Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html)
