@@ -33,12 +33,13 @@ resource "aws_instance" "web" {
     aws_security_group.allow_all_outbound.id,
   ]
 
-  user_data                   = <<-EOT
+  user_data = <<-EOT
             #!/bin/bash
             yum update
             yum install -y nginx
             nginx
             EOT
+
   user_data_replace_on_change = true
 
   tags = {
@@ -46,7 +47,7 @@ resource "aws_instance" "web" {
   }
 }
 
-output "http_address" {
-  value = "http://${aws_instance.web.public_ip}"
-  description = "The public HTTP address of the web server running Nginx."
+output "http_ipv4_address" {
+  value       = "http://${aws_instance.web.public_ip}"
+  description = "The public HTTP ipv4 address of the web server running Nginx."
 }
