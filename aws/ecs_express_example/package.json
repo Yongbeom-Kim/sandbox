@@ -16,6 +16,9 @@
     "docker:build": "docker build -t ecs_express_example .",
     "docker:run": "yarn docker:kill; docker run -it -p 80:80 --name ecs_express_example_cont ecs_express_example",
     "docker:kill": "docker kill ecs_express_example_cont; docker rm ecs_express_example_cont",
-    "docker:get_request": "echo $(curl http://localhost:80)"
+    "docker:get_request": "echo $(curl http://localhost:80)",
+    "tf:init": "cd terraform && terraform init",
+    "tf:plan": "cd terraform && terraform plan",
+    "tf:apply": "cd terraform && terraform apply -auto-approve"
   }
 }
