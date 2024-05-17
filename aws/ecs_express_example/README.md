@@ -70,6 +70,7 @@ To see the scripts involved in running the Express app locally, check the `scrip
     ```bash
     yarn tf:destroy
     ```
+   - You may have to manually delete the EC2 instance generated from the AutoScaling Group.
 
 ## Things to take note of
 ### HTTP(S)

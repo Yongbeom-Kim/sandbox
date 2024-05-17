@@ -87,6 +87,13 @@ resource "aws_launch_template" "t2micro" {
     ]
   }
 
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "${var.service_name}-instance"
+    }
+  }
+
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html#linux-liw-advanced-details
   user_data = base64encode(<<-EOF
               #!/bin/bash
