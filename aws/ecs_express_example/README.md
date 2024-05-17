@@ -91,5 +91,8 @@ When letting an Auto Scaling Group manage EC2 instances for the ECS cluster, you
     ECS_CLUSTER=${ECS_CLUSTER_NAME}
     EOF
     ```
+## Updating ECS Task Definitions
+One problem with the `aws_ecs_task_definition` resource is that when you update the Docker container, the task definition is not updated. To get around this, we specify the the sha256 of the Docker image in the `container_definitions` field of the `aws_ecs_task_definition` resource. This way, when the Docker image is updated, the sha256 will change and Terraform will update the task definition.
+
 ## `terraform destroy` with an AutoScaling Group
 When you run `terraform destroy` with an AutoScaling Group, Terraform will not be able to destroy the EC2 instances created by the AutoScaling Group because it is not tracked by Terraform. To get around this, this project uses the [`local-exec` provisioner](./terraform/ecs.tf#L107) to run a script that will delete the EC2 instances associated with the AutoScaling Group.

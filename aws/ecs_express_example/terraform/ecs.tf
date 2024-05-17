@@ -179,6 +179,7 @@ resource "aws_ecs_task_definition" "service" {
   family = "${var.service_name}-task-definition"
   container_definitions = jsonencode([{
     "name"      = "${var.service_name}-task-definition",
+    # Image digest to update task definition upon image re-build
     "image"     = "${docker_registry_image.image.name}@${docker_registry_image.image.sha256_digest}",
     "cpu"       = 1024,
     "memory"    = 512,
