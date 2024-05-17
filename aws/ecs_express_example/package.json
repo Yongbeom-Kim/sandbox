@@ -19,6 +19,8 @@
     "docker:get_request": "echo $(curl http://localhost:80)",
     "tf:init": "cd terraform && terraform init",
     "tf:plan": "cd terraform && terraform plan",
-    "tf:apply": "cd terraform && terraform apply -auto-approve"
+    "tf:apply": "cd terraform && terraform apply",
+    "tf:format": "cd terraform && terraform fmt",
+    "tf:destroy": "cd terraform && terraform destroy"
   }
 }

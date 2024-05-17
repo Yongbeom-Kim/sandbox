@@ -36,3 +36,10 @@ resource "docker_registry_image" "image" {
     "digest" = docker_image.image.repo_digest
   }
 }
+
+# output "docker_image" {
+#   value = docker_image.image
+# }
+# output "docker_registry_image" {
+#   value = docker_registry_image.image
+# }
