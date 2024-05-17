@@ -1,6 +1,6 @@
 # AWS Sandbox
 
-Sandbox for examples and testing with AWS services.
+Sandbox for examples and testing with AWS services. All examples are written in Terraform.
 
 ## Sub-Repositories
 
