@@ -70,7 +70,6 @@ To see the scripts involved in running the Express app locally, check the `scrip
     ```bash
     yarn tf:destroy
     ```
-   - You may have to manually delete the EC2 instance generated from the AutoScaling Group.
 
 ## Things to take note of
 ### HTTP(S)
@@ -92,3 +91,5 @@ When letting an Auto Scaling Group manage EC2 instances for the ECS cluster, you
     ECS_CLUSTER=${ECS_CLUSTER_NAME}
     EOF
     ```
+## `terraform destroy` with an AutoScaling Group
+When you run `terraform destroy` with an AutoScaling Group, Terraform will not be able to destroy the EC2 instances created by the AutoScaling Group because it is not tracked by Terraform. To get around this, this project uses the [`local-exec` provisioner](./terraform/ecs.tf#L107) to run a script that will delete the EC2 instances associated with the AutoScaling Group.

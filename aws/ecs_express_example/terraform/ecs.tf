@@ -104,6 +104,19 @@ resource "aws_launch_template" "t2micro" {
 }
 
 resource "aws_autoscaling_group" "ec2_capacity" {
+  # Terminate EC2 instances when the ASG is destroyed
+  # This block is at the top of the resource block so that it is executed first (before the resource is destroyed).
+  provisioner "local-exec" {
+    when = destroy
+    interpreter = [ "/bin/bash", "-c"]
+    command =<<-EOT
+        INSTANCES=($(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names ${self.id} --query "AutoScalingGroups[0].Instances[].InstanceId" --output text))
+        for i in "$${INSTANCES[@]}"; do
+          aws ec2 terminate-instances --instance-ids $i || true
+        done
+        EOT
+  }
+
   name_prefix      = "${var.service_name}-asg"
   max_size         = 1
   min_size         = 1
@@ -131,6 +144,14 @@ resource "aws_autoscaling_group" "ec2_capacity" {
       min_healthy_percentage = 0
     }
   }
+}
+
+output "ec2_capacity_provider" {
+  value = aws_autoscaling_group.ec2_capacity
+}
+
+output "ec2_launch_template" {
+  value = aws_launch_template.t2micro
 }
 
 resource "aws_ecs_capacity_provider" "ec2_capacity_provider" {
