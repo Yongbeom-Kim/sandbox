@@ -1,3 +1,9 @@
+variable "s3_inbox_key_prefix" {
+  type        = string
+  description = "The prefix for the S3 object key when messages are added to the S3 bucket."
+  default = null
+}
+
 ## Set up SES
 data "aws_route53_zone" "main" {
   name = var.domain
@@ -49,7 +55,12 @@ resource "aws_s3_bucket" "inbox" {
 }
 
 # Bucket policy to allow SES to write to the bucket
-data "aws_iam_policy_document" "allow_s3_access" {
+
+locals {
+  ses_receipt_rule_name = "${var.service_name}-rule"
+}
+
+data "aws_iam_policy_document" "allow_ses_access" {
   statement {
     sid = "AllowSESPuts"
     effect = "Allow"
@@ -60,7 +71,8 @@ data "aws_iam_policy_document" "allow_s3_access" {
     }
 
     actions = ["s3:PutObject"]
-    resources = [aws_s3_bucket.inbox.arn, "${aws_s3_bucket.inbox.arn}/*"]
+    # Even if we have a prefix, we need to allow access to all items inside the bucket, or else the rule creation will fail.
+    resources = ["${aws_s3_bucket.inbox.arn}/*"]
 
     condition {
       test     = "StringEquals"
@@ -72,15 +84,17 @@ data "aws_iam_policy_document" "allow_s3_access" {
       test     = "StringEquals"
       variable = "AWS:SourceArn"
       # This is the ARN of the receipt rule set
-      # The receipt rule can only be created after the bucket policy, so we need to use a wildcard for now
-      values   = ["${aws_ses_receipt_rule_set.main.arn}:receipt-rule/*"]
+      # The receipt rule can only be created after the bucket policy, so we use a local variable for this.
+      # Note that we cannot use the ARN of the receipt rule itself, as it is not created yet.
+      # We also cannot use something like :receipt-rule/* for some reason (it fails??)
+      values   = ["${aws_ses_receipt_rule_set.main.arn}:receipt-rule/${local.ses_receipt_rule_name}"]
     }
   }
 }
 
-resource "aws_s3_bucket_policy" "allow_s3_access" {
+resource "aws_s3_bucket_policy" "allow_ses_access" {
   bucket = aws_s3_bucket.inbox.id
-  policy = data.aws_iam_policy_document.allow_s3_access.json
+  policy = data.aws_iam_policy_document.allow_ses_access.json
 }
 
 resource "aws_ses_receipt_rule_set" "main" {
@@ -88,7 +102,7 @@ resource "aws_ses_receipt_rule_set" "main" {
 }
 
 resource "aws_ses_receipt_rule" "ses_to_s3" {
-  name          = "${var.service_name}-rule"
+  name          = "${local.ses_receipt_rule_name}"
   rule_set_name = aws_ses_receipt_rule_set.main.rule_set_name
   recipients    = ["${var.domain}"]
   enabled       = true
@@ -103,9 +117,10 @@ resource "aws_ses_receipt_rule" "ses_to_s3" {
 
   s3_action {
     bucket_name = aws_s3_bucket.inbox.bucket
+    object_key_prefix = var.s3_inbox_key_prefix
     position    = 2
   }
 
   # Cannot be added until the bucket policy is created
-  depends_on = [ aws_s3_bucket_policy.allow_s3_access ]
+  depends_on = [ aws_s3_bucket_policy.allow_ses_access ]
 }
