@@ -36,19 +36,6 @@ resource "aws_route53_record" "ses_mx" {
   records = ["10 inbound-smtp.${data.aws_region.current.name}.amazonaws.com"]
 }
 
-resource "aws_ses_domain_mail_from" "feedback" {
-  domain           = aws_ses_domain_identity.main.domain
-  mail_from_domain = "mail.${aws_ses_domain_identity.main.domain}"
-}
-
-resource "aws_route53_record" "feedback_mx" {
-  zone_id = data.aws_route53_zone.main.id
-  name    = aws_ses_domain_mail_from.feedback.mail_from_domain
-  type    = "MX"
-  ttl     = "600"
-  records = ["10 feedback-smtp.${data.aws_region.current.name}.amazonses.com"]
-}
-
 # TODO: Need SPF and DKIM records
 
 ## Set up S3

@@ -2,6 +2,17 @@
 
 Example to receive emails (for a Route53 domain) using AWS SES and store them in an S3 bucket.
 
+This project sets up:
+- Amazon Simple Email Service
+  - Domain Verification
+  - Email Receiving Rule Set
+    - Email Receiving Rule (to S3 bucket)
+  - MX Records for Route53 domain (receiving)
+- S3 bucket
+  - Bucket Policy (to allow SES to write to the bucket)
+
+Note that this project does not configure SES to send emails (only receive).
+
 ## Requirements
 
 * Terraform
