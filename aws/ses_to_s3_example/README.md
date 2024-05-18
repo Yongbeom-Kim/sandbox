@@ -11,7 +11,7 @@ This project sets up:
 - S3 bucket
   - Bucket Policy (to allow SES to write to the bucket)
 
-Note that this project does not configure SES to send emails (only receive).
+This project also sets up SES for sending (mail_from MX record, SPF + DKIM + DMARC records) but does not include the necessary steps to send emails.
 
 ## Requirements
 
