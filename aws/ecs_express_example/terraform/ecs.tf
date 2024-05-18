@@ -1,5 +1,9 @@
-## ECS Cluster
+variable "ecs_ec2_instance_type" {
+  description = "The instance type to use for ECS EC2 instances."
+  default     = "t3.micro"
+}
 
+## ECS Cluster
 resource "aws_ecs_cluster" "cluster" {
   name = "${var.service_name}-cluster"
 }
@@ -71,7 +75,7 @@ resource "aws_iam_instance_profile" "instance_profile" {
 resource "aws_launch_template" "t2micro" {
   name_prefix   = "${var.service_name}-lt"
   image_id      = data.aws_ami.default_ami.id
-  instance_type = "t2.micro"
+  instance_type = var.ecs_ec2_instance_type
 
   iam_instance_profile {
     arn = aws_iam_instance_profile.instance_profile.arn
@@ -144,14 +148,6 @@ resource "aws_autoscaling_group" "ec2_capacity" {
       min_healthy_percentage = 0
     }
   }
-}
-
-output "ec2_capacity_provider" {
-  value = aws_autoscaling_group.ec2_capacity
-}
-
-output "ec2_launch_template" {
-  value = aws_launch_template.t2micro
 }
 
 resource "aws_ecs_capacity_provider" "ec2_capacity_provider" {

@@ -1,0 +1,2 @@
+service_name = "example-service"
+ecs_ec2_instance_type = "t3.micro"
