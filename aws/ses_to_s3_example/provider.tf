@@ -18,6 +18,8 @@ provider "aws" {
   }
 }
 
+data "aws_region" "current" {}
+
 variable "domain" {
   type        = string
   description = "The domain name for the email address of the service. This domain must be registered in Amazon Route 53."
