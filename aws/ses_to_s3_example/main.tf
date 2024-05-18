@@ -28,17 +28,25 @@ resource "aws_ses_domain_identity_verification" "main" {
 }
 
 # Route53 MX record
-resource "aws_ses_domain_mail_from" "main" {
-  domain           = aws_ses_domain_identity.main.domain
-  mail_from_domain = "bounce.${aws_ses_domain_identity.main.domain}"
-}
-
 resource "aws_route53_record" "ses_mx" {
   zone_id = data.aws_route53_zone.main.id
-  name    = aws_ses_domain_mail_from.main.mail_from_domain
+  name    = aws_ses_domain_identity.main.domain
   type    = "MX"
   ttl     = "600"
-  records = ["10 feedback-smtp.${data.aws_region.current.name}.amazonses.com"] # Change to the region in which `aws_ses_domain_identity.example` is created
+  records = ["10 inbound-smtp.${data.aws_region.current.name}.amazonaws.com"]
+}
+
+resource "aws_ses_domain_mail_from" "feedback" {
+  domain           = aws_ses_domain_identity.main.domain
+  mail_from_domain = "mail.${aws_ses_domain_identity.main.domain}"
+}
+
+resource "aws_route53_record" "feedback_mx" {
+  zone_id = data.aws_route53_zone.main.id
+  name    = aws_ses_domain_mail_from.feedback.mail_from_domain
+  type    = "MX"
+  ttl     = "600"
+  records = ["10 feedback-smtp.${data.aws_region.current.name}.amazonses.com"]
 }
 
 # TODO: Need SPF and DKIM records
@@ -99,6 +107,10 @@ resource "aws_s3_bucket_policy" "allow_ses_access" {
 
 resource "aws_ses_receipt_rule_set" "main" {
   rule_set_name = "${var.service_name}-rule-set"
+}
+
+resource "aws_ses_active_receipt_rule_set" "main" {
+  rule_set_name = aws_ses_receipt_rule_set.main.rule_set_name
 }
 
 resource "aws_ses_receipt_rule" "ses_to_s3" {
