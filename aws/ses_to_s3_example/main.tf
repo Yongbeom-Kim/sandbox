@@ -35,6 +35,7 @@ resource "aws_route53_record" "ses_mx" {
   records = ["10 feedback-smtp.${data.aws_region.current.name}.amazonses.com"] # Change to the region in which `aws_ses_domain_identity.example` is created
 }
 
+# TODO: Need SPF and DKIM records
 
 ## Set up S3
 resource "aws_s3_bucket" "inbox" {
