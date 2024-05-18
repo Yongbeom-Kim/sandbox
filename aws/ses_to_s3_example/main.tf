@@ -47,3 +47,65 @@ resource "aws_s3_bucket" "inbox" {
     Name = "${var.service_name}-inbox"
   }
 }
+
+# Bucket policy to allow SES to write to the bucket
+data "aws_iam_policy_document" "allow_s3_access" {
+  statement {
+    sid = "AllowSESPuts"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["ses.amazonaws.com"]
+    }
+
+    actions = ["s3:PutObject"]
+    resources = [aws_s3_bucket.inbox.arn, "${aws_s3_bucket.inbox.arn}/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = ["${data.aws_caller_identity.current.account_id}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      # This is the ARN of the receipt rule set
+      # The receipt rule can only be created after the bucket policy, so we need to use a wildcard for now
+      values   = ["${aws_ses_receipt_rule_set.main.arn}:receipt-rule/*"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "allow_s3_access" {
+  bucket = aws_s3_bucket.inbox.id
+  policy = data.aws_iam_policy_document.allow_s3_access.json
+}
+
+resource "aws_ses_receipt_rule_set" "main" {
+  rule_set_name = "${var.service_name}-rule-set"
+}
+
+resource "aws_ses_receipt_rule" "ses_to_s3" {
+  name          = "${var.service_name}-rule"
+  rule_set_name = aws_ses_receipt_rule_set.main.rule_set_name
+  recipients    = ["${var.domain}"]
+  enabled       = true
+  scan_enabled  = true
+  tls_policy    = "Require"
+
+  add_header_action {
+    header_name  = "X-SES-${var.service_name}"
+    header_value = "This email was processed by SES and stored in S3. Service: ${var.service_name}"
+    position     = 1
+  }
+
+  s3_action {
+    bucket_name = aws_s3_bucket.inbox.bucket
+    position    = 2
+  }
+
+  # Cannot be added until the bucket policy is created
+  depends_on = [ aws_s3_bucket_policy.allow_s3_access ]
+}
