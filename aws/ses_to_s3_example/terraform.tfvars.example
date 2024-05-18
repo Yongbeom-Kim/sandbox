@@ -1,0 +1,3 @@
+domain       = "domain.tld"
+service_name = "ses-to-s3-example"
+s3_inbox_key_prefix = "inbox/"
