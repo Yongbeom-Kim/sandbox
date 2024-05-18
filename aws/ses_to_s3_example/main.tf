@@ -127,8 +127,8 @@ resource "aws_ses_receipt_rule" "ses_to_s3" {
 
 ## Set up SES to send emails
 resource "aws_ses_domain_mail_from" "main" {
-  domain = var.domain
-  mail_from_domain = "mail.${var.domain}"
+  domain = aws_ses_domain_identity.main.domain
+  mail_from_domain = "mail.${aws_ses_domain_identity.main.domain}"
 }
 
 # MX record
@@ -170,4 +170,36 @@ resource "aws_route53_record" "dmarc_record" {
   type    = "TXT"
   ttl     = "600"
   records = ["v=DMARC1; p=reject; rua=mailto:admin@${var.domain}"]
+}
+
+# SMTP Credentials
+resource "aws_iam_user" "smtp_user" {
+  name = "${var.service_name}-smtp-user"
+}
+
+resource "aws_iam_access_key" "smtp_user" {
+  user = aws_iam_user.smtp_user.name
+}
+
+data "aws_iam_policy_document" "ses_sender" {
+  statement {
+    actions   = ["ses:SendRawEmail"]
+    resources = ["${aws_ses_domain_identity.main.arn}"]
+  }
+}
+
+resource "aws_iam_policy" "ses_sender" {
+  name        = "ses_sender"
+  description = "Allows sending of e-mails via Simple Email Service"
+  policy      = data.aws_iam_policy_document.ses_sender.json
+}
+
+resource "aws_iam_user_policy_attachment" "smtp_user" {
+  user       = aws_iam_user.smtp_user.name
+  policy_arn = aws_iam_policy.ses_sender.arn
+}
+
+locals {
+  smtp_username = aws_iam_access_key.smtp_user.id
+  smtp_password = aws_iam_access_key.smtp_user.ses_smtp_password_v4
 }
