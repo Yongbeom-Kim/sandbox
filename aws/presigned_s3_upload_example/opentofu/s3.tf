@@ -36,3 +36,13 @@ resource "aws_iam_user_policy" "upload" {
 resource "aws_iam_access_key" "upload" {
   user = aws_iam_user.upload.name
 }
+
+output "upload_user_access_key" {
+  value = aws_iam_access_key.upload.id
+  sensitive = true
+}
+
+output "upload_user_secret_key" {
+  value = aws_iam_access_key.upload.secret
+  sensitive = true
+}

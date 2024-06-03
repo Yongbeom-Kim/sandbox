@@ -5,7 +5,8 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-
+  console.log(import.meta.env.VITE_IAM_USER)
+  console.log(import.meta.env.VITE_IAM_KEY)
   return (
     <>
       <div>
