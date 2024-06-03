@@ -4,6 +4,17 @@ resource "aws_s3_bucket" "upload" {
   force_destroy = true # This is a dangerous option, use with caution. Convenient for this example.
 }
 
+resource "aws_s3_bucket_cors_configuration" "upload" {
+  bucket = aws_s3_bucket.upload.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST"]
+    allowed_origins = ["*"]
+    max_age_seconds = 3000
+  }
+}
+
 # IAM policy for uploading to the bucket. This user should ideally live in the backend service.
 data "aws_iam_policy_document" "upload" {
   statement {
@@ -11,9 +22,6 @@ data "aws_iam_policy_document" "upload" {
 
     actions = [
       "s3:PutObject",
-      "s3:GetObject",
-      # "s3:ListBucket",
-      # "s3:DeleteObject",
     ]
 
     resources = [
@@ -33,6 +41,7 @@ resource "aws_iam_user_policy" "upload" {
   policy = data.aws_iam_policy_document.upload.json
 }
 
+
 resource "aws_iam_access_key" "upload" {
   user = aws_iam_user.upload.name
 }
@@ -45,4 +54,8 @@ output "upload_user_access_key" {
 output "upload_user_secret_key" {
   value = aws_iam_access_key.upload.secret
   sensitive = true
+}
+
+output "upload_bucket" {
+  value = aws_s3_bucket.upload.bucket
 }

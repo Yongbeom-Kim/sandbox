@@ -23,3 +23,9 @@ variable "service_name" {
     default = "my-service"
     description = "Service name used as a prefix for all resource names."
 }
+
+data "aws_region" "current" {}
+
+output "aws_region" {
+    value = data.aws_region.current.name
+}

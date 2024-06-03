@@ -1,34 +1,21 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { createPresignedUrl } from './lib/presign';
+import { upload_file_from_s3_presigned_link } from './lib/upload';
 
+const upload = async (file: File | null) => {
+  if (!file) return;
+
+  const presignedURL = await createPresignedUrl(file.name);
+  return await upload_file_from_s3_presigned_link(presignedURL, file);
+
+}
 function App() {
-  const [count, setCount] = useState(0)
-  console.log(import.meta.env.VITE_IAM_USER)
-  console.log(import.meta.env.VITE_IAM_KEY)
+  const [file, setFile] = useState<File | null>(null)
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <input type="file" name="" id="" onChange={e => setFile(e.target.files![0] ?? null)} />
+      <button onClick={() => upload(file)}>Upload file</button>
     </>
   )
 }
