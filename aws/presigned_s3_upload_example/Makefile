@@ -1,2 +1,5 @@
-init plan apply:
+init plan apply destroy:
 	cd opentofu && tofu $@
+
+serve:
+	yarn run dev
