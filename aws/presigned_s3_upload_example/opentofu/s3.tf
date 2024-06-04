@@ -12,6 +12,8 @@ resource "aws_s3_bucket_cors_configuration" "upload" {
     allowed_methods = ["PUT", "POST"]
     allowed_origins = ["*"]
     max_age_seconds = 3000
+    # Expose the Etag header to the client
+    expose_headers = ["Etag"]
   }
 }
 
