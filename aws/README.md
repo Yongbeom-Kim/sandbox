@@ -8,5 +8,5 @@ Sandbox for examples and testing with AWS services. All examples are written in 
 | --- | --- |
 | [./ec2_nginx_example](./ec2_nginx_example) | Installation of Nginx on EC2 instance. Example for configuring VPCs, subnets, security groups to host web applications on EC2 instances. |
 | [./ecs_express_example](./ecs_express_example) | Sample project to demonstrate how to deploy an Express.js application to AWS ECS. |
-| [./presigned_s3_upload_example](./presigned_s3_upload_example) | This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules. |
+| [./presigned_s3_upload_example](./presigned_s3_upload_example) | This is a simple example of how to upload files to an S3 bucket using presigned URLs (both single and multi-part). |
 | [./ses_to_s3_example](./ses_to_s3_example) | Example to receive emails (for a Route53 domain) using AWS SES and store them in an S3 bucket. |

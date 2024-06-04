@@ -14,6 +14,9 @@ const secretAccessKey = import.meta.env.VITE_IAM_KEY;
 const bucketName = import.meta.env.VITE_UPLOAD_BUCKET;
 const region = import.meta.env.VITE_AWS_REGION;
 
+/*
+This file is meant to be an endpoint on the backend (on the frontend for simplicity)
+*/
 
 const s3Client = new S3Client({
   region,
