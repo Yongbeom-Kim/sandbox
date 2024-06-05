@@ -26,3 +26,4 @@ For the multi-part upload, the upload is done via the following process.
 - [UploadPart - AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html)
 - [CompleteMultipartUpload - AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html)
 - [Stackoverflow thread](https://stackoverflow.com/questions/66656565/aws-sdk-multipart-upload-to-s3-with-node-js)
+- [WebKitFormBoundary in payload issue](https://stackoverflow.com/questions/55420393/form-boundary-is-being-written-to-my-file-when-i-upload-to-server-making-it-cor)

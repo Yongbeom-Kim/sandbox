@@ -10,11 +10,9 @@ export const uploadFromPresignedLink = async function (
   url: string,
   file: File
 ): Promise<null> {
-  const formData = new FormData();
-  formData.append("file", file);
-
   try {
-    await axios.put(url, formData, {
+    // https://stackoverflow.com/questions/55420393/form-boundary-is-being-written-to-my-file-when-i-upload-to-server-making-it-cor
+    await axios.put(url, file, {
       validateStatus: (status: number) => status < 300,
     });
     return null;
@@ -36,15 +34,12 @@ export const uploadMultipart = async function (
     const partUploadUrls: string[] =
       await createPresignedUrlsForEachMultipartUpload(key, parts, uploadId);
     const uploadPromises: Promise<AxiosResponse>[] = partUploadUrls.map((url, i) => {
-      const formData = new FormData();
-      formData.append(
-        "file",
-        file.slice(
+      const data = file.slice(
           i * Math.ceil(file.size / parts),
           (i + 1) * Math.ceil(file.size / parts)
         )
-      );
-      return axios.put(url, formData, {
+      // https://stackoverflow.com/questions/55420393/form-boundary-is-being-written-to-my-file-when-i-upload-to-server-making-it-cor
+      return axios.put(url, data, {
         validateStatus: (status: number) => status < 300,
       });
     })
