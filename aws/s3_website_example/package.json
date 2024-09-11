@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:infra": "sh ./scripts/deploy_infra.sh",
+    "deploy:code": "sh ./scripts/deploy_code.sh",
+    "destroy:infra": "sh ./scripts/destroy_infra.sh",
+    "destroy:code": "sh ./scripts/destroy_code.sh"
   },
   "dependencies": {
     "react": "^18.3.1",
