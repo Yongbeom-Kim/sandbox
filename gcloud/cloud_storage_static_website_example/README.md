@@ -1,6 +1,8 @@
 # Google Cloud Storage - Static Website Hosting Example
 This is an example of how to host a static website (Vite template) on Google Cloud Storage, with the relevant DNS, SSL, and CDN/Load Balancer configurations.
 
+To see the website hosted, go to [cloud-storage-static-website-example.sandsquare.app](https://cloud-storage-static-website-example.sandsquare.app).
+
 ## Prerequisites
 - Google Cloud SDK (`gcloud` CLI)
 - OpenTofu
