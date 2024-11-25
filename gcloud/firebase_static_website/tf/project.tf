@@ -18,7 +18,7 @@ variable "services" {
   type = list(string)
   description = "The services to enable in the project"
   default = [
-
+    "firebase.googleapis.com"
   ]
 }
 
@@ -33,10 +33,10 @@ resource "google_project" "default" {
 # Use `gcloud` to enable:
 # - serviceusage.googleapis.com
 # - cloudresourcemanager.googleapis.com
+# This must be done
 resource "null_resource" "enable_service_usage_api" {
   provisioner "local-exec" {
-    # command = "gcloud services enable serviceusage.googleapis.com cloudresourcemanager.googleapis.com --project ${var.project_id}"
-    command = "gcloud services enable serviceusage.googleapis.com --project ${local.project_id}"
+    command = "gcloud services enable serviceusage.googleapis.com cloudresourcemanager.googleapis.com --project ${local.project_id}"
   }
 
   provisioner "local-exec" {
@@ -58,8 +58,8 @@ resource "google_project_service" "services" {
 }
 
 
-# # This gives me debilitating errors
-# # I'm not sure why, but I'm not going to spend any more time on this
+# # this gives me debilitating errors
+# # i'm not sure why, but i'm not going to spend any more time on this
 # # https://github.com/terraform-google-modules/terraform-google-project-factory/issues/813
 # module "project-factory" {
 #   source  = "terraform-google-modules/project-factory/google"

@@ -63,3 +63,8 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+## Firebase (just for this project)
+.firebase
+.firebaserc
+firebase.json

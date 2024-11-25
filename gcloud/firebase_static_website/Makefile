@@ -14,3 +14,21 @@ tf-plan:  ## Plan the OpenTofu project
 tf-apply:  ## Apply the OpenTofu project
 	set -a && source ./.env && set +a && \
 		cd tf && tofu apply
+
+tf-destroy:  ## Destroy the OpenTofu project
+	set -a && source ./.env && set +a && \
+		cd tf && tofu destroy
+
+##@ Vite
+vite-build:  ## Build the Vite app
+	yarn && yarn run build
+
+##@ Firebase
+firebase-login:  ## Login to Firebase
+	firebase login
+
+firebase-init:  ## Initialize the Firebase project
+	firebase init hosting
+
+firebase-deploy:  ## Deploy the Vite app to Firebase
+	firebase deploy --only hosting
