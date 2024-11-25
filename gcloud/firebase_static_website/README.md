@@ -18,7 +18,7 @@ To get started with this repository, ensure you have the following dependencies 
 
 1. Initialize the OpenTofu project: `make tf-init`
 2. Plan the OpenTofu project: `make tf-plan`
-3. Apply the OpenTofu project: `make tf-apply`
+3. Apply the OpenTofu project: `make tf-apply` (you may have to run this multiple times)
 4. Destroy the OpenTofu project (if needed): `make tf-destroy`
 
 ### Build and Deploy the Vite App to Firebase
