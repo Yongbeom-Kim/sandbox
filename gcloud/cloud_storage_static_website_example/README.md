@@ -3,6 +3,8 @@ This is an example of how to host a static website (Vite template) on Google Clo
 
 To see the website hosted, go to [cloud-storage-static-website-example.sandsquare.app](https://cloud-storage-static-website-example.sandsquare.app).
 
+**WARNING: THIS WILL COST YOU AROUND $18/MONTH FROM THE LOAD BALANCER.** Go host it on [firebase](../firebase_static_website/) for free.
+
 ## Prerequisites
 - Google Cloud SDK (`gcloud` CLI)
 - OpenTofu
