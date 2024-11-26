@@ -262,9 +262,17 @@ Commands related to the backend application.
   - You might have to run `tofu apply` multiple times if you get some API errors regarding the GCP Project.
 
   - `flask_cors`, for some reason, does not work as expected when running the container on Cloud Run. You have to manually add the CORS headers to the response.
-  ```
+  ```python
+  # Does not work
   from flask_cors import CORS
   CORS(app)
+  # We use this instead
+  @app.after_request
+  def add_cors_headers(response):
+      response.headers.add('Access-Control-Allow-Origin', '*')
+      response.headers.add('Access-Control-Allow-Methods', '*')
+      response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+      return response
   ```
 
 - **Help Command**:
