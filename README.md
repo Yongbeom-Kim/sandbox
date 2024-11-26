@@ -11,4 +11,5 @@ Can be copy-pasted into other projects, at your own risk.
 | Sub-repository | Description |
 | --- | --- |
 | [./aws](./aws) | Sandbox for examples and testing with AWS services. All examples are written in Terraform/OpenTofu. |
+| [./cockroach](./cockroach) | Sandbox for examples and testing CockroachDB. |
 | [./gcloud](./gcloud) | Sandbox for examples and testing with Google Cloud services. All examples are written in Terraform/OpenTofu. |
