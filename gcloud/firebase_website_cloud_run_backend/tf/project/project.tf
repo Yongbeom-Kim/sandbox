@@ -9,21 +9,17 @@ variable "folder_id" {
   description = "The folder ID of the project"
 }
 
+variable "services" {
+  type = list(string)
+  description = "The services to enable in the project"
+}
+
 locals {
   project_id = "${var.project_display_name}-${random_id.project_id_suffix.hex}"
 }
 
 resource "random_id" "project_id_suffix" {
   byte_length = 6
-}
-
-
-variable "services" {
-  type = list(string)
-  description = "The services to enable in the project"
-  default = [
-    "firebase.googleapis.com"
-  ]
 }
 
 resource "google_project" "default" {

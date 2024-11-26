@@ -1,10 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  console.log(import.meta.env.VITE_BACKEND_URL)
+
+  const [request, setRequest] = useState('Making request to backend...')
+
+  useEffect(() => {
+    fetch(import.meta.env.VITE_BACKEND_URL + '/hello')
+      .then(res => res.json())
+      .then(data => setRequest(`Response from backend: ${data.message}`))
+      .catch(err => setRequest(`Error from backend: ${err}`))
+  }, [])
 
   return (
     <>
@@ -23,6 +33,12 @@ function App() {
         </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+        <p>
+          Backend URL: <a href={import.meta.env.VITE_BACKEND_URL}>{import.meta.env.VITE_BACKEND_URL}</a>
+        </p>
+        <p>
+          {request}
         </p>
       </div>
       <p className="read-the-docs">
