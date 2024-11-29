@@ -3,3 +3,4 @@
 %uri=https://github.com/Yongbeom-Kim/sandbox/cockroach/serverless-cockroachdb-sqitch
 
 testschema 2024-11-29T18:02:12Z Yongbeom Kim <dernbu@gmail.com> # Add test schema
+testtable [testschema] 2024-11-29T18:59:57Z Yongbeom Kim <dernbu@gmail.com> # Add test table.

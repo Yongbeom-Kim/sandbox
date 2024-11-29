@@ -59,3 +59,38 @@ sqitch verify db:cockroach://kim:PASSWORD@URI
 ```bash
 sqitch revert db:cockroach://kim:PASSWORD@URI
 ```
+
+### Register Target DB
+```bash
+sqitch target add testdb db:cockroach://kim:PASSWORD@URI
+# Now we can do
+sqitch deploy testdb # etc.
+```
+
+### Register default target
+```bash
+sqitch engine add cockroach testdb
+```
+
+### Add table
+```bash
+sqitch add testtable -n 'Add test table.'
+```
+
+`deploy/testtable.sql`
+```sql
+CREATE TABLE testschema.testtable (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL
+);
+```
+
+`revert/testtable.sql`
+```sql
+DROP TABLE testschema.testtable;
+```
+
+`verify/testtable.sql`
+```sql
+SELECT id, name FROM testschema.testtable WHERE FALSE;
+```

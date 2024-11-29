@@ -6,3 +6,6 @@
 	target = db:cockroach://kim:PASSWORD@URI
 	registry = sqitch
 	client = psql
+
+[target "testdb"]
+	uri = db:cockroach://kim:PASSWORD@URI
