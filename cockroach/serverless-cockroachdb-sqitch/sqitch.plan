@@ -1,0 +1,4 @@
+%syntax-version=1.0.0
+%project=sqitch-csql-sandbox
+%uri=https://github.com/Yongbeom-Kim/sandbox/cockroach/serverless-cockroachdb-sqitch
+
