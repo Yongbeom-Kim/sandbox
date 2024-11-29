@@ -1,0 +1,8 @@
+[core]
+	engine = cockroach
+	plan_file = sqitch.plan
+	top_dir = .
+[engine "cockroach"]
+	target = db:cockroach://kim:PASSWORD@URI
+	registry = sqitch
+	client = psql
