@@ -5,22 +5,43 @@ Example of using Sqitch to manage schemas for a Serverless CockroachDB database.
 
 ## Commands used to set up
 
+### Create Database Cluster
 ```bash
-sqitch init sqitch-csql-sandbox --uri https://github.com/Yongbeom-Kim/sandbox/cockroach/serverless-cockroachdb-sqitch --engine cockroach
-sqitch config --user engine.pg.client /opt/local/pgsql/bin/psql
-sqitch config --user engine.cockroach.client /opt/local/pgsql/bin/psql
+make tf-init
+make tf-apply
+```
+
+### Initialize Sqitch
+
+Steps to initialize Sqitch for CockroachDB:
+```bash
+sqitch config --user engine.pg.client $(which psql)
+sqitch config --user engine.cockroach.client $(which psql)
 sqitch config --user user.name 'Yongbeom Kim'
 sqitch config --user user.email 'dernbu@gmail.com'
 cat ~/.sqitch/sqitch.conf
 
-# Fix "Cannot find template" error
-sudo cp /usr/local/etc/sqitch/templates/deploy/pg.tmpl /usr/local/etc/sqitch/templates/deploy/cockroach.tmpl
-sudo cp /usr/local/etc/sqitch/templates/revert/pg.tmpl /usr/local/etc/sqitch/templates/revert/cockroach.tmpl
-sudo cp /usr/local/etc/sqitch/templates/verify/pg.tmpl /usr/local/etc/sqitch/templates/verify/cockroach.tmpl
+## Fix "Cannot find template" error
+etc_dir=$(dirname $(which sqitch))/../etc/sqitch
+for template in deploy revert verify; do
+    sudo cp $etc_dir/templates/$template/pg.tmpl $etc_dir/templates/$template/cockroach.tmpl
+done
 ```
-### Adding Schema
+
+Register target DB:
 ```bash
-sqitch add testschema -n 'Add test schema.'
+sqitch init sqitch-csql-sandbox --uri https://github.com/Yongbeom-Kim/sandbox/cockroach/serverless-cockroachdb-sqitch --engine cockroach
+sqitch target add sandbox_db "$(make print_cockroach_sqitch_uri)"
+sqitch engine add cockroach sandbox_db
+```
+
+## Commands & Deployments
+### Add a schema
+```bash
+sqitch add add_test_schema -n "Add schema: testschema"
+# After adding the scripts,
+sqitch deploy
+sqitch verify
 ```
 
 `deploy/testschema.sql`
@@ -44,33 +65,7 @@ BEGIN
 END $$;
 ```
 
-#### Deploying
-```bash
-sqitch deploy db:cockroach://kim:PASSWORD@URI
-```
 
-#### Verifying
-```bash
-sqitch verify db:cockroach://kim:PASSWORD@URI
-
-```
-
-#### Reverting
-```bash
-sqitch revert db:cockroach://kim:PASSWORD@URI
-```
-
-### Register Target DB
-```bash
-sqitch target add testdb db:cockroach://kim:PASSWORD@URI
-# Now we can do
-sqitch deploy testdb # etc.
-```
-
-### Register default target
-```bash
-sqitch engine add cockroach testdb
-```
 
 ### Add table
 ```bash
