@@ -3,3 +3,5 @@
 %uri=https://github.com/Yongbeom-Kim/sandbox/cockroach/serverless-cockroachdb-sqitch
 
 add_test_schema 2024-12-06T12:45:47Z Yongbeom Kim <dernbu@gmail.com> # Add schema: testschema
+drop_test_schema 2024-12-06T13:28:31Z Yongbeom Kim <dernbu@gmail.com> # Drop schema: testschema
+create_test_schema_again [drop_test_schema] 2024-12-06T13:46:03Z Yongbeom Kim <dernbu@gmail.com> # Recreate dropped test schema

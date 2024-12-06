@@ -1,4 +1,4 @@
--- Verify sqitch-csql-sandbox:add_test_schema on cockroach
+-- Verify sqitch-csql-sandbox:create_test_schema_again on cockroach
 
 BEGIN;
 
