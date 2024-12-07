@@ -3,6 +3,7 @@
 Example of using Sqitch to manage schemas for a Serverless CockroachDB database.
 
 ## Notes:
+- Your API key needs the "Cluster Administrator" role.
 - CockroachDB 24.3+ is required for triggers. There is a bug in Terraform CockroachDB provider:
   - When applying changes to `cockroach_cluster.example`, provider "provider[\"registry.opentofu.org/cockroachdb/cockroach\"]" produced an unexpected new value: .cockroach_version: was cty.StringVal("v24.3"), but now cty.StringVal("v24.2").
   - This is why we set the version to v24.2 in `.env`.
