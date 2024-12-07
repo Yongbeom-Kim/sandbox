@@ -14,3 +14,5 @@ create_users_email_idx 2024-12-07T17:19:30Z Yongbeom Kim <dernbu@gmail.com> # Cr
 drop_users_email_idx [create_users_email_idx] 2024-12-07T17:21:00Z Yongbeom Kim <dernbu@gmail.com> # Drop index on users email
 create_active_users_view 2024-12-07T17:27:16Z Yongbeom Kim <dernbu@gmail.com> # Create view equivalent to users
 drop_active_users_view [create_active_users_view] 2024-12-07T17:28:48Z Yongbeom Kim <dernbu@gmail.com> # Drop active users view
+create_get_user_func 2024-12-07T17:33:28Z Yongbeom Kim <dernbu@gmail.com> # Create function to get user by username
+drop_get_user_func [create_get_user_func] 2024-12-07T17:41:38Z Yongbeom Kim <dernbu@gmail.com> # Drop get user by username function

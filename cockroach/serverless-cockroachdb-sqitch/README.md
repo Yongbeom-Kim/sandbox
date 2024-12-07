@@ -476,47 +476,35 @@ ROLLBACK;
 
 ### Create Function
 ```bash
-sqitch add add_get_user_func -n "Create function to get user by username"
+sqitch add create_get_user_func -n "Create function to get user by username"
 ```
 
-`deploy/add_get_user_func.sql`
+`deploy/create_get_user_func.sql`
 ```sql
-CREATE FUNCTION testschema.get_user_by_username(p_username VARCHAR(50))
-RETURNS TABLE (
-    id UUID,
-    username VARCHAR(50),
-    email VARCHAR(255),
-    created_at TIMESTAMP
-) AS $$
-BEGIN
-    RETURN QUERY
+CREATE FUNCTION testschema.get_user_by_username(IN p_username VARCHAR(50), OUT id UUID, OUT username VARCHAR(50), OUT email VARCHAR(255), OUT created_at TIMESTAMP)
+LANGUAGE SQL AS $$
     SELECT u.id, u.username, u.email, u.created_at
     FROM testschema.users u
     WHERE u.username = p_username;
-END;
-$$ LANGUAGE plpgsql;
+$$;
+-- note that RETURNS TABLE is currently not supported by CockroachDB.
 ```
 
-`revert/add_get_user_func.sql`
+`revert/create_get_user_func.sql`
 ```sql
 DROP FUNCTION testschema.get_user_by_username;
 ```
 
-`verify/add_get_user_func.sql`
+`verify/create_get_user_func.sql`
 ```sql
 BEGIN;
 
 CREATE PROCEDURE verify_get_user_function()
 LANGUAGE plpgsql AS $$
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 
-        FROM pg_proc p 
-        JOIN pg_namespace n ON p.pronamespace = n.oid 
-        WHERE n.nspname = 'testschema' 
-        AND p.proname = 'get_user_by_username'
-    ) THEN
-        RAISE EXCEPTION 'get_user_by_username function does not exist';
+    INSERT INTO testschema.users (username, email) VALUES ('testuser', 'testuser@example.com');
+    IF (SELECT email FROM testschema.get_user_by_username('testuser')) != 'testuser@example.com' THEN
+        RAISE EXCEPTION 'get_user_by_username function does not exist, or does not return the correct user';
     END IF;
 END;
 $$;
@@ -530,7 +518,7 @@ ROLLBACK;
 
 ### Drop Function
 ```bash
-sqitch add drop_get_user_func -n "Drop get user by username function"
+sqitch add drop_get_user_func -r create_get_user_func -n "Drop get user by username function"
 ```
 
 `deploy/drop_get_user_func.sql`
@@ -540,20 +528,12 @@ DROP FUNCTION testschema.get_user_by_username;
 
 `revert/drop_get_user_func.sql`
 ```sql
-CREATE FUNCTION testschema.get_user_by_username(p_username VARCHAR(50))
-RETURNS TABLE (
-    id UUID,
-    username VARCHAR(50),
-    email VARCHAR(255),
-    created_at TIMESTAMP
-) AS $$
-BEGIN
-    RETURN QUERY
+CREATE FUNCTION testschema.get_user_by_username(IN p_username VARCHAR(50), OUT id UUID, OUT username VARCHAR(50), OUT email VARCHAR(255), OUT created_at TIMESTAMP)
+LANGUAGE SQL AS $$
     SELECT u.id, u.username, u.email, u.created_at
     FROM testschema.users u
     WHERE u.username = p_username;
-END;
-$$ LANGUAGE plpgsql;
+$$;
 ```
 
 `verify/drop_get_user_func.sql`
@@ -565,10 +545,9 @@ LANGUAGE plpgsql AS $$
 BEGIN
     IF EXISTS (
         SELECT 1 
-        FROM pg_proc p 
-        JOIN pg_namespace n ON p.pronamespace = n.oid 
-        WHERE n.nspname = 'testschema' 
-        AND p.proname = 'get_user_by_username'
+        FROM information_schema.routines 
+        WHERE routine_schema = 'testschema' 
+        AND routine_name = 'get_user_by_username'
     ) THEN
         RAISE EXCEPTION 'get_user_by_username function still exists';
     END IF;
