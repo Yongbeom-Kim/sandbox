@@ -1,11 +1,16 @@
 [core]
 	engine = cockroach
-	plan_file = sqitch.plan
-	top_dir = .
+	# plan_file = sqitch.plan
+	# top_dir = .
+# [engine "cockroach"]
+	# target = db:cockroach:
+	# registry = sqitch
+	# client = /usr/bin/psql
+[target "sandbox_db"]
+	uri = cockroach://USERNAME:PASSWORD@sandbox-5940.j77.aws-ap-southeast-1.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full
 [engine "cockroach"]
-	target = db:cockroach://kim:PASSWORD@URI
-	registry = sqitch
-	client = psql
-
-[target "testdb"]
-	uri = db:cockroach://kim:PASSWORD@URI
+	target = sandbox_db
+[deploy]
+	verify = true
+[rebase]
+	verify = true

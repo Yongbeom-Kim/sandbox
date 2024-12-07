@@ -1,3 +1,4 @@
+.env
 sqitch.conf
 tf/terraform.tfstate
 tf/terraform.tfstate.backup

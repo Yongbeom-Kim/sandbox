@@ -2,6 +2,14 @@
 
 Example of using Sqitch to manage schemas for a Serverless CockroachDB database.
 
+## Notes:
+- CockroachDB 24.3+ is required for triggers. There is a bug in Terraform CockroachDB provider:
+  - When applying changes to `cockroach_cluster.example`, provider "provider[\"registry.opentofu.org/cockroachdb/cockroach\"]" produced an unexpected new value: .cockroach_version: was cty.StringVal("v24.3"), but now cty.StringVal("v24.2").
+  - This is why we set the version to v24.2 in `.env`.
+- No trigger support
+- No anonymous block support (`DO $$ ... $$ LANGUAGE plpgsql;`)
+- No RETURNS TABLE support
+- 
 
 ## Commands used to set up
 
@@ -561,12 +569,12 @@ DROP PROCEDURE verify_get_user_function_dropped();
 ROLLBACK;
 ```
 
-### Create Trigger
+### Create Trigger (CockroachDB 24.3+, not done right now)
 ```bash
-sqitch add add_update_timestamp_trigger -n "Add trigger to update timestamp on modification"
+sqitch add create_user_update_timestamp_trigger -n "Add trigger to update timestamp on modification"
 ```
 
-`deploy/add_update_timestamp_trigger.sql`
+`deploy/create_user_update_timestamp_trigger.sql`
 ```sql
 CREATE FUNCTION testschema.update_modified_column()
 RETURNS TRIGGER AS $$
@@ -582,30 +590,43 @@ CREATE TRIGGER update_users_modtime
     EXECUTE FUNCTION testschema.update_modified_column();
 ```
 
-`revert/add_update_timestamp_trigger.sql`
+`revert/create_user_update_timestamp_trigger.sql`
 ```sql
 DROP TRIGGER update_users_modtime ON testschema.users;
 DROP FUNCTION testschema.update_modified_column;
 ```
 
-`verify/add_update_timestamp_trigger.sql`
+`verify/create_user_update_timestamp_trigger.sql`
 ```sql
 BEGIN;
 
 CREATE PROCEDURE verify_update_timestamp_trigger()
 LANGUAGE plpgsql AS $$
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 
-        FROM pg_trigger t 
-        JOIN pg_class c ON t.tgrelid = c.oid 
-        JOIN pg_namespace n ON c.relnamespace = n.oid 
-        WHERE n.nspname = 'testschema' 
-        AND c.relname = 'users' 
-        AND t.tgname = 'update_users_modtime'
-    ) THEN
-        RAISE EXCEPTION 'update_users_modtime trigger does not exist';
-    END IF;
+    DECLARE
+        v_old_timestamp TIMESTAMP;
+        v_new_timestamp TIMESTAMP;
+    BEGIN
+        -- Insert a test user
+        INSERT INTO testschema.users (username, email) VALUES ('testuser', 'testuser@example.com');
+        
+        -- Get the current timestamp
+        SELECT modified_at INTO v_old_timestamp FROM testschema.users WHERE username = 'testuser';
+        
+        -- Update the test user
+        UPDATE testschema.users SET email = 'updateduser@example.com' WHERE username = 'testuser';
+        
+        -- Get the new timestamp
+        SELECT modified_at INTO v_new_timestamp FROM testschema.users WHERE username = 'testuser';
+        
+        -- Check if the timestamp has been updated
+        IF v_old_timestamp = v_new_timestamp THEN
+            RAISE EXCEPTION 'update_users_modtime trigger did not update the timestamp';
+        END IF;
+        
+        -- Clean up the test user
+        DELETE FROM testschema.users WHERE username = 'testuser';
+    END;
 END;
 $$;
 
@@ -616,18 +637,18 @@ DROP PROCEDURE verify_update_timestamp_trigger();
 ROLLBACK;
 ```
 
-### Drop Trigger
+### Drop Trigger (CockroachDB 24.3+, not done right now)
 ```bash
-sqitch add drop_update_timestamp_trigger -n "Drop update timestamp trigger"
+sqitch add drop_user_update_timestamp_trigger -r create_user_update_timestamp_trigger -n "Drop update timestamp trigger"
 ```
 
-`deploy/drop_update_timestamp_trigger.sql`
+`deploy/drop_user_update_timestamp_trigger.sql`
 ```sql
 DROP TRIGGER update_users_modtime ON testschema.users;
 DROP FUNCTION testschema.update_modified_column;
 ```
 
-`revert/drop_update_timestamp_trigger.sql`
+`revert/drop_user_update_timestamp_trigger.sql`
 ```sql
 CREATE FUNCTION testschema.update_modified_column()
 RETURNS TRIGGER AS $$
@@ -643,7 +664,7 @@ CREATE TRIGGER update_users_modtime
     EXECUTE FUNCTION testschema.update_modified_column();
 ```
 
-`verify/drop_update_timestamp_trigger.sql`
+`verify/drop_user_update_timestamp_trigger.sql`
 ```sql
 BEGIN;
 
@@ -670,170 +691,3 @@ DROP PROCEDURE verify_update_timestamp_trigger_dropped();
 
 ROLLBACK;
 ```
-
-### Create Sequence
-```bash
-sqitch add add_order_seq -n "Create sequence for order numbers"
-```
-
-`deploy/add_order_seq.sql`
-```sql
-CREATE SEQUENCE testschema.order_number_seq
-    START WITH 1000
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO CYCLE;
-```
-
-`revert/add_order_seq.sql`
-```sql
-DROP SEQUENCE testschema.order_number_seq;
-```
-
-`verify/add_order_seq.sql`
-```sql
-BEGIN;
-
-CREATE PROCEDURE verify_order_sequence()
-LANGUAGE plpgsql AS $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 
-        FROM information_schema.sequences 
-        WHERE sequence_schema = 'testschema' 
-        AND sequence_name = 'order_number_seq'
-    ) THEN
-        RAISE EXCEPTION 'order_number_seq sequence does not exist';
-    END IF;
-END;
-$$;
-
-CALL verify_order_sequence();
-
-DROP PROCEDURE verify_order_sequence();
-
-ROLLBACK;
-```
-
-### Drop Sequence
-```bash
-sqitch add drop_order_seq -n "Drop order number sequence"
-```
-
-`deploy/drop_order_seq.sql`
-```sql
-DROP SEQUENCE testschema.order_number_seq;
-```
-
-`revert/drop_order_seq.sql`
-```sql
-CREATE SEQUENCE testschema.order_number_seq
-    START WITH 1000
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO CYCLE;
-```
-
-`verify/drop_order_seq.sql`
-```sql
-BEGIN;
-
-CREATE PROCEDURE verify_order_sequence_dropped()
-LANGUAGE plpgsql AS $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 
-        FROM information_schema.sequences 
-        WHERE sequence_schema = 'testschema' 
-        AND sequence_name = 'order_number_seq'
-    ) THEN
-        RAISE EXCEPTION 'order_number_seq sequence still exists';
-    END IF;
-END;
-$$;
-
-CALL verify_order_sequence_dropped();
-
-DROP PROCEDURE verify_order_sequence_dropped();
-
-ROLLBACK;
-```
-
-### Create Extensionx
-```bash
-sqitch add add_uuid_ossp -n "Add uuid-ossp extension"
-```
-
-`deploy/add_uuid_ossp.sql`
-```sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-```
-
-`revert/add_uuid_ossp.sql`
-```sql
-DROP EXTENSION "uuid-ossp";
-```
-
-`verify/add_uuid_ossp.sql`
-```sql
-BEGIN;
-
-CREATE PROCEDURE verify_uuid_ossp_extension()
-LANGUAGE plpgsql AS $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 
-        FROM pg_extension 
-        WHERE extname = 'uuid-ossp'
-    ) THEN
-        RAISE EXCEPTION 'uuid-ossp extension does not exist';
-    END IF;
-END;
-$$;
-
-CALL verify_uuid_ossp_extension();
-
-DROP PROCEDURE verify_uuid_ossp_extension();
-
-ROLLBACK;
-```
-
-### Drop Extension
-```bash
-sqitch add drop_uuid_ossp -n "Drop uuid-ossp extension"
-```
-
-`deploy/drop_uuid_ossp.sql`
-```sql
-DROP EXTENSION "uuid-ossp";
-```
-
-`revert/drop_uuid_ossp.sql`
-```sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-```
-
-`verify/drop_uuid_ossp.sql`
-```sql
-BEGIN;
-
-CREATE PROCEDURE verify_uuid_ossp_extension_dropped()
-LANGUAGE plpgsql AS $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 
-        FROM pg_extension 
-        WHERE extname = 'uuid-ossp'
-    ) THEN
-        RAISE EXCEPTION 'uuid-ossp extension still exists';
-    END IF;
-END;
-$$;
-
-CALL verify_uuid_ossp_extension_dropped();
-
-DROP PROCEDURE verify_uuid_ossp_extension_dropped();
-
-ROLLBACK;
-```
-

@@ -10,11 +10,16 @@ variable "regions" {
     }))
 }
 
+variable "cockroach_version" {
+    type = string
+}
+
 resource "cockroach_cluster" "example" {
     name = var.cluster_name
     cloud_provider = "AWS"
     regions = var.regions
     serverless = {}
+    cockroach_version = var.cockroach_version
 }
 
 resource "random_id" "sql_user_name" {
