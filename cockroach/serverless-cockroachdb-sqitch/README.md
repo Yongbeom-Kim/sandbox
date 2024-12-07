@@ -307,7 +307,7 @@ ROLLBACK;
 
 ### Create Index
 ```bash
-sqitch add add_users_email_idx -n "Add index on users email"
+sqitch add create_users_email_idx -n "Create index on users email"
 ```
 
 `deploy/add_users_email_idx.sql`

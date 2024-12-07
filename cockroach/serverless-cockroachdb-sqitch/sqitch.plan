@@ -10,3 +10,5 @@ add_user_status_column [create_user_table] 2024-12-07T09:49:28Z Yongbeom Kim <de
 drop_user_status_column [add_user_status_column] 2024-12-07T10:06:12Z Yongbeom Kim <dernbu@gmail.com> # Drop status column from users table
 drop_users_table [add_user_status_column] 2024-12-07T10:42:12Z Yongbeom Kim <dernbu@gmail.com> # Drop users table
 create_users_table_again [drop_users_table] 2024-12-07T10:45:18Z Yongbeom Kim <dernbu@gmail.com> # Create table testschema.users table again
+create_users_email_idx 2024-12-07T17:19:30Z Yongbeom Kim <dernbu@gmail.com> # Create index on users email
+drop_users_email_idx [create_users_email_idx] 2024-12-07T17:21:00Z Yongbeom Kim <dernbu@gmail.com> # Drop index on users email
