@@ -348,7 +348,7 @@ ROLLBACK;
 
 ### Drop Index
 ```bash
-sqitch add drop_users_email_idx -n "Drop index on users email"
+sqitch add drop_users_email_idx -r create_users_email_idx -n "Drop index on users email"
 ```
 
 `deploy/drop_users_email_idx.sql`
@@ -389,20 +389,20 @@ ROLLBACK;
 
 ### Create View
 ```bash
-sqitch add add_active_users_view -n "Create view for active users"
+sqitch add create_active_users_view -n "Create view equivalent to users"
 ```
 
 `deploy/add_active_users_view.sql`
 ```sql
-CREATE VIEW testschema.active_users AS
+CREATE VIEW testschema.users_view AS
 SELECT id, username, email, created_at
 FROM testschema.users
-WHERE status = 'active';
+WHERE 1 = 1;
 ```
 
 `revert/add_active_users_view.sql`
 ```sql
-DROP VIEW testschema.active_users;
+DROP VIEW testschema.users_view;
 ```
 
 `verify/add_active_users_view.sql`
@@ -416,7 +416,7 @@ BEGIN
         SELECT 1 
         FROM information_schema.views 
         WHERE table_schema = 'testschema' 
-        AND table_name = 'active_users'
+        AND table_name = 'users_view'
     ) THEN
         RAISE EXCEPTION 'active_users view does not exist';
     END IF;
@@ -432,43 +432,44 @@ ROLLBACK;
 
 ### Drop View
 ```bash
-sqitch add drop_active_users_view -n "Drop active users view"
+sqitch add drop_active_users_view -r create_active_users_view -n "Drop active users view"
 ```
 
 `deploy/drop_active_users_view.sql`
 ```sql
-DROP VIEW testschema.active_users;
+DROP VIEW testschema.users_view;
 ```
 
 `revert/drop_active_users_view.sql`
 ```sql
-CREATE VIEW testschema.active_users AS
+-- I know, a bit strange for this to be in revert.
+CREATE VIEW testschema.users_view AS
 SELECT id, username, email, created_at
 FROM testschema.users
-WHERE status = 'active';
+WHERE 1 = 1;
 ```
 
 `verify/drop_active_users_view.sql`
 ```sql
 BEGIN;
 
-CREATE PROCEDURE verify_active_users_view_dropped()
+CREATE PROCEDURE verify_users_view_dropped()
 LANGUAGE plpgsql AS $$
 BEGIN
     IF EXISTS (
         SELECT 1 
         FROM information_schema.views 
         WHERE table_schema = 'testschema' 
-        AND table_name = 'active_users'
+        AND table_name = 'users_view'
     ) THEN
-        RAISE EXCEPTION 'active_users view still exists';
+        RAISE EXCEPTION 'users_view still exists';
     END IF;
 END;
 $$;
 
-CALL verify_active_users_view_dropped();
+CALL verify_users_view_dropped();
 
-DROP PROCEDURE verify_active_users_view_dropped();
+DROP PROCEDURE verify_users_view_dropped();
 
 ROLLBACK;
 ```
@@ -779,7 +780,7 @@ DROP PROCEDURE verify_order_sequence_dropped();
 ROLLBACK;
 ```
 
-### Create Extension
+### Create Extensionx
 ```bash
 sqitch add add_uuid_ossp -n "Add uuid-ossp extension"
 ```
