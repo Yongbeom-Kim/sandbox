@@ -131,10 +131,10 @@ ROLLBACK;
 
 ### Create Table
 ```bash
-sqitch add add_users_table -n "Create table: users in testschema"
+sqitch add create_user_table -n "Create table testschema.users table"
 ```
 
-`deploy/add_users_table.sql`
+`deploy/create_user_table.sql`
 ```sql
 CREATE TABLE testschema.users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -144,12 +144,12 @@ CREATE TABLE testschema.users (
 );
 ```
 
-`revert/add_users_table.sql`
+`revert/create_user_table.sql`
 ```sql
 DROP TABLE testschema.users;
 ```
 
-`verify/add_users_table.sql`
+`verify/create_user_table.sql`
 ```sql
 BEGIN;
 
@@ -176,22 +176,22 @@ ROLLBACK;
 
 ### Alter Table (Add Column)
 ```bash
-sqitch add add_user_status -n "Add status column to users table"
+sqitch add add_user_status_column -r create_user_table -n "Add status column to users table" 
 ```
 
-`deploy/add_user_status.sql`
+`deploy/add_user_status_column.sql`
 ```sql
 ALTER TABLE testschema.users
 ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'active';
 ```
 
-`revert/add_user_status.sql`
+`revert/add_user_status_column.sql`
 ```sql
 ALTER TABLE testschema.users
 DROP COLUMN status;
 ```
 
-`verify/add_user_status.sql`
+`verify/add_user_status_column.sql`
 ```sql
 BEGIN;
 
@@ -219,22 +219,22 @@ ROLLBACK;
 
 ### Alter Table (Drop Column)
 ```bash
-sqitch add drop_user_status -n "Drop status column from users table"
+sqitch add drop_user_status_column -r add_user_status_column -n "Drop status column from users table"
 ```
 
-`deploy/drop_user_status.sql`
+`deploy/drop_user_status_column.sql`
 ```sql
 ALTER TABLE testschema.users
 DROP COLUMN status;
 ```
 
-`revert/drop_user_status.sql`
+`revert/drop_user_status_column.sql`
 ```sql
 ALTER TABLE testschema.users
 ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'active';
 ```
 
-`verify/drop_user_status.sql`
+`verify/drop_user_status_column.sql`
 ```sql
 BEGIN;
 
@@ -262,7 +262,7 @@ ROLLBACK;
 
 ### Drop Table
 ```bash
-sqitch add drop_users_table -n "Drop table: users from testschema"
+sqitch add drop_users_table -r add_user_status_column -n "Drop users table"
 ```
 
 `deploy/drop_users_table.sql`

@@ -5,3 +5,8 @@
 add_test_schema 2024-12-06T12:45:47Z Yongbeom Kim <dernbu@gmail.com> # Add schema: testschema
 drop_test_schema 2024-12-06T13:28:31Z Yongbeom Kim <dernbu@gmail.com> # Drop schema: testschema
 create_test_schema_again [drop_test_schema] 2024-12-06T13:46:03Z Yongbeom Kim <dernbu@gmail.com> # Recreate dropped test schema
+create_user_table 2024-12-07T09:31:26Z Yongbeom Kim <dernbu@gmail.com> # Create table testschema.users table
+add_user_status_column [create_user_table] 2024-12-07T09:49:28Z Yongbeom Kim <dernbu@gmail.com> # Add status column to users table
+drop_user_status_column [add_user_status_column] 2024-12-07T10:06:12Z Yongbeom Kim <dernbu@gmail.com> # Drop status column from users table
+drop_users_table [add_user_status_column] 2024-12-07T10:42:12Z Yongbeom Kim <dernbu@gmail.com> # Drop users table
+create_users_table_again [drop_users_table] 2024-12-07T10:45:18Z Yongbeom Kim <dernbu@gmail.com> # Create table testschema.users table again
